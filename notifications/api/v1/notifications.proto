@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package github.com.igoroutine_courses.microservices.ecommerce.notifications.api.v1;
+
+option go_package = "github.com/igoroutine-courses/microservices.ecommerce.pkg/generated/notifications/api/notifications/v1;notifications";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+service Notifications {
+    rpc SendOrderStatusChangedNotification(OrderStatusChangedNotificationRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/notifications/order/status-changed"
+            body: "*"
+        };
+    }
+}
+
+message OrderStatusChangedNotificationRequest {
+    int64 user_id = 1 [(validate.rules).int64 = {gte: 0}];
+    int64 order_id = 2 [(validate.rules).int64 = {gte: 0}];
+    OrderStatus status = 3;
+}
+
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;
+  ORDER_STATUS_NEW = 1;
+  ORDER_STATUS_AWAITING_PAYMENT = 2;
+  ORDER_STATUS_FAILED = 3;
+  ORDER_STATUS_PAID = 4;
+  ORDER_STATUS_CANCELLED = 5;
+}
